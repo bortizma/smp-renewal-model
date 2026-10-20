@@ -1,1 +1,16 @@
+The model simulates rays moving through a 2D porous material made of void space and solid particles. 
+Rays start near the bottom, travel through the void, reflect from particle boundaries, and eventually reflect back out, transmit through the top, get lost through the sides, or stop after too many steps.
+The gradient method estimates smoother surface normals by building a signed distance field from the binary geometry, smoothing it, and taking its gradient. 
+This gives more stable reflection directions than using raw pixel differences.
+The main model assumption is that particles are opaque, so rays reflect rather than pass through them. 
+Energy loss is modeled with an exponential attenuation controlled by beta, meaning longer ray paths return less energy.
+The Semi-Markov renewal model records many beta-zero ray paths once, including direction-bin transitions, path lengths, and exit outcomes. 
+It then reuses that database to estimate reflection probability and energy reflectivity faster than rerunning full Monte Carlo ray tracing every time.
+The code compares the renewal model against direct MCRT to check accuracy, runtime, uncertainty, and sensitivity to parameters like ray count, direction bins, smoothing, density, grid size, and beta.
 
+WORKFLOW
+- media.py creates the porous medium geometry.
+- gradient.py calculates surface-normal directions from the geometry.
+- core.py traces individual rays through the medium.
+- simulate.py and simulator.py run many ray simulations.
+- validation.py compares the renewal model against Monte Carlo ray tracing.
